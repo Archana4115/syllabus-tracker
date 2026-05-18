@@ -7,6 +7,7 @@ from .models import Topic
 from .models import Enrollment
 from datetime import date, timedelta
 from .models import Topic
+from progress.models import Topic
 from progress.models import ChatMessage
 from progress.models import DailyProgress
 from .models import Enrollment, Topic
@@ -65,7 +66,24 @@ def teacher_dashboard(request):
         'overall_progress': overall_progress
     }
 
-    return render(request, 'teacher_dashboard.html', context)
+    completed_topics = Topic.objects.filter(
+    completed=True
+    ).count()
+
+    pending_topics = Topic.objects.filter(
+    completed=False
+    ).count()
+
+    return render(request, 'teacher_dashboard.html', {
+
+    'courses': courses,
+    'overall_progress': overall_progress,
+
+    # PIE CHART DATA
+    'completed_topics': completed_topics,
+    'pending_topics': pending_topics,
+
+})
 
 @login_required
 def student_dashboard(request):

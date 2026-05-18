@@ -70,7 +70,9 @@
 <h3 style="margin-top:20px;">Overview</h3>
 
 <div class="section card">
-    <canvas id="myChart"></canvas>
+    <h3>Topic Analytics</h3>
+
+    <canvas id="pieChart"></canvas>
 </div>
 
 <script>
@@ -84,6 +86,31 @@ new Chart(document.getElementById('myChart'), {
             backgroundColor: '#D0A2F7'
         }]
     }
+});
+
+new Chart(document.getElementById('pieChart'), {
+
+    type: 'pie',
+
+    data: {
+
+        labels: ['Completed', 'Pending'],
+
+        datasets: [{
+
+            data: [
+                {{ completed_topics }},
+                {{ pending_topics }}
+            ],
+
+            backgroundColor: [
+                '#D0A2F7',
+                '#E5D4FF'
+            ]
+
+        }]
+    }
+
 });
 </script>
 

@@ -32,25 +32,7 @@ def student_report(request):
     })
 
 
-# 📄 DOWNLOAD REPORT
-@login_required
-def download_report(request):
-
-    response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="report.csv"'
-
-    writer = csv.writer(response)
-    writer.writerow(['Course Name'])
-
-    courses = Course.objects.all()
-
-    for c in courses:
-        writer.writerow([c.course_name])   # ✅ ONLY NAME (NO completion)
-
-    return response
-
-
-
+# 📄 DOWNLOAD REPORTs
 @login_required
 def download_pdf_report(request):
 

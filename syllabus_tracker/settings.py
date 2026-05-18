@@ -25,9 +25,17 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-$(=h23r2o%00080o3udfv)ukbb9a5%0c2xzga=wbo1%vfiqib='
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = [
+    '127.0.0.1',
+    'localhost',
+    '.onrender.com',
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://syllabus-tracker-l115.onrender.com',
+]
 
 
 # Application definition
