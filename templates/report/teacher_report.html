@@ -27,14 +27,20 @@ body {
     box-shadow:0 8px 20px rgba(0,0,0,0.05);
 }
 
-.btn {
+.btn{
     background:#D0A2F7;
-    padding:10px 15px;
+    padding:12px 18px;
     border-radius:10px;
     text-decoration:none;
     color:black;
+    display:inline-block;
+    margin-top:15px;
+    transition:0.3s;
 }
 
+.btn:hover{
+    background:#DCBFFF;
+}
 </style>
 
 </head>
@@ -53,7 +59,9 @@ body {
 {% endfor %}
 
 <a href="/report/download/" class="btn">Download Report</a>
-
+<a href="/report/download-pdf/" class="btn">
+    Download PDF Report
+</a>
 </div>
 
 </body>
