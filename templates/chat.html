@@ -1,0 +1,182 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+
+<head>
+<title>Chat</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+
+/* BODY */
+body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    background: #F1EAFF;
+}
+
+/* MAIN */
+.main {
+    max-width: 600px;
+    margin: 30px auto;
+    padding: 20px;
+}
+
+/* HEADER */
+.main h2 {
+    margin-bottom: 5px;
+}
+
+.main p {
+    margin-bottom: 15px;
+}
+
+/* CHAT BOX */
+.card {
+    background: white;
+    padding: 15px;
+    border-radius: 15px;
+    height: 400px;
+    overflow-y: auto;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+    animation: fadeIn 0.5s ease;
+}
+
+/* MESSAGE */
+.msg {
+    margin: 10px 0;
+    display: flex;
+}
+
+/* LEFT */
+.msg.left {
+    justify-content: flex-start;
+}
+
+/* RIGHT */
+.msg.right {
+    justify-content: flex-end;
+}
+
+/* BUBBLE */
+.bubble {
+    padding: 10px 15px;
+    border-radius: 15px;
+    max-width: 70%;
+    animation: fadeUp 0.3s ease;
+}
+
+/* MY MESSAGE */
+.bubble.me {
+    background: #D0A2F7;
+}
+
+/* OTHER */
+.bubble.other {
+    background: #E5D4FF;
+}
+
+/* FORM */
+form {
+    display: flex;
+    margin-top: 15px;
+}
+
+/* INPUT */
+form input {
+    flex: 1;
+    padding: 12px;
+    border-radius: 20px;
+    border: 1px solid #ddd;
+}
+
+/* BUTTON */
+form button {
+    margin-left: 10px;
+    background: #D0A2F7;
+    border: none;y
+    padding: 10px 15px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+form button:hover {
+    background: #DCBFFF;
+    transform: scale(1.05);
+}
+
+/* ANIMATION */
+@keyframes fadeIn {
+    from {opacity: 0;}
+    to {opacity: 1;}
+}
+
+@keyframes fadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* MOBILE */
+@media (max-width: 768px) {
+
+    .main {
+        padding: 10px;
+    }
+
+    .card {
+        height: 60vh;
+    }
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="main">
+
+<h2>💬 Chat with {{ receiver.username }}</h2>
+<p style="color:gray;">Private conversation</p>
+
+<div class="card">
+
+{% for msg in messages %}
+
+<div class="msg {% if msg.sender.id == request.user.id %}right{% else %}left{% endif %}">
+
+    <div class="bubble {% if msg.sender.id == request.user.id %}me{% else %}other{% endif %}">
+        {% if msg.sender.id != request.user.id %}
+            <b>{{ msg.sender.username }}</b><br>
+        {% endif %}
+        {{ msg.message }}
+    </div>
+
+</div>
+
+{% endfor %}
+
+</div>
+
+<form method="POST">
+{% csrf_token %}
+
+<input type="text" name="message" placeholder="Type message..." required>
+
+<button type="submit">Send</button>
+
+</form>
+
+</div>
+
+</body>
+</html>

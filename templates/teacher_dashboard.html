@@ -1,0 +1,140 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+
+<head>
+<title>Teacher Dashboard</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+<link rel="stylesheet" href="{% static 'css/teacher_dashboard.css' %}">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+</head>
+
+<body>
+
+<!--  TOPBAR -->
+<div class="topbar">
+
+    <!-- 3 DOT MENU -->
+    <div class="menu-btn" onclick="toggleSidebar()">
+        ☰
+    </div>
+
+    <h2>Syllabus Dashboard</h2>
+
+</div>
+
+<!-- SIDEBAR -->
+<div class="sidebar" id="sidebar">
+
+    <h2>Tracker</h2>
+
+    <a href="#">Dashboard</a>
+    <a href="{% url 'add_progress' %}">Add Progress</a>
+    <a href="/teacher-chat/">💬 Student Chats</a>
+    <a href="/report/teacher/">📄 Reports</a>
+    
+</div>
+
+<!-- MAIN -->
+<div class="main" id="main">
+
+<!-- Stats -->
+<div class="grid">
+
+    <div class="card">
+        <h3>{{ courses|length }}</h3>
+        <p>Total Courses</p>
+    </div>
+
+    <div class="card">
+        <h3>{{ completion_data|length }}</h3>
+        <p>Active Subjects</p>
+    </div>
+
+    <div class="card">
+        <h3>{{ overall_progress }}%</h3>
+        <p>Overall Progress</p>
+    </div>
+
+    <div class="card">
+        <h3>{{ upcoming_topics|length }}</h3>
+        <p>Upcoming Topics</p>
+    </div>
+
+</div>
+
+<!-- Chart -->
+<h3 style="margin-top:20px;">Overview</h3>
+
+<div class="section card">
+    <canvas id="myChart"></canvas>
+</div>
+
+<script>
+new Chart(document.getElementById('myChart'), {
+    type: 'bar',
+    data: {
+        labels: {{ course_names|safe }},
+        datasets: [{
+            label: 'Completion %',
+            data: {{ completion_data|safe }},
+            backgroundColor: '#D0A2F7'
+        }]
+    }
+});
+</script>
+
+<!-- Courses -->
+<div class="section grid">
+
+{% for course in courses %}
+<div class="card">
+
+    <h3>{{ course.name }}</h3>
+    <p>Completion: {{ course.completion }}%</p>
+
+    <div class="progress">
+        <div class="progress-bar" style="width: {{ course.completion }}%">
+            {{ course.completion }}%
+        </div>
+    </div>
+
+    {% if course.behind %}
+        <p style="color:red;">⚠ Behind Schedule</p>
+    {% endif %}
+
+</div>
+{% endfor %}
+
+</div>
+
+<!-- Upcoming -->
+<div class="section card">
+
+<h3>Upcoming Topics</h3>
+
+{% for topic in upcoming_topics %}
+    <p>{{ topic.topic_name }} - {{ topic.planned_start_date }}</p>
+{% empty %}
+    <p>No topics</p>
+{% endfor %}
+
+</div>
+
+</div>
+
+<!-- JS -->
+<script>
+
+function toggleSidebar() {
+    let sidebar = document.getElementById("sidebar");
+    sidebar.classList.toggle("active");
+}
+
+</script>
+
+</body>
+</html>

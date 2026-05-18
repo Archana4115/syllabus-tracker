@@ -1,0 +1,116 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+<title>Syllabus Tracker</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+
+/* BODY */
+body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #F1EAFF, #E5D4FF);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+/* MAIN CARD */
+.container {
+    text-align: center;
+    background: white;
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    width: 90%;
+    max-width: 400px;
+
+    animation: fadeIn 1s ease;
+}
+
+/* TITLE */
+.container h1 {
+    margin-bottom: 10px;
+}
+
+/* TEXT */
+.container p {
+    color: gray;
+    margin-bottom: 25px;
+}
+
+/* BUTTONS */
+.btn {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 15px;
+    border-radius: 12px;
+    text-decoration: none;
+    color: black;
+    font-weight: 500;
+    background: #D0A2F7;
+    transition: 0.3s;
+}
+
+/* HOVER ANIMATION */
+.btn:hover {
+    transform: translateY(-3px);
+    background: #c08cf0;
+}
+
+/* ADMIN BUTTON */
+.admin {
+    background: #E5D4FF;
+}
+
+/* ANIMATION */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* MOBILE */
+@media (max-width: 768px) {
+    .container {
+        padding: 25px;
+    }
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h1> Syllabus Tracker</h1>
+<p>Select your role to continue</p>
+
+<a href="/accounts/teacher/login/" class="btn">
+👨‍🏫 Login as Teacher
+</a>
+
+<a href="/accounts/student/login/" class="btn">
+👨‍🎓 Login as Student
+</a>
+
+<a href="/admin/" class="btn admin">
+Admin
+</a>
+
+</div>
+
+</body>
+</html>

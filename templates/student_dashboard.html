@@ -1,0 +1,189 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+
+<head>
+<title>Student Dashboard</title>
+
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+<link rel="stylesheet" href="{% static 'css/student_dashboard.css' %}">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+</head>
+
+<body>
+
+<!-- 🔘 TOPBAR -->
+<div class="topbar">
+
+    <!-- ☰ MENU -->
+    <div class="menu-btn" onclick="toggleSidebar()">
+        ☰
+    </div>
+
+    <h2>Student Dashboard</h2>
+
+</div>
+
+<!-- SIDEBAR -->
+<div class="sidebar" id="sidebar">
+
+    <h2>Tracker</h2>
+
+    <a href="#">Dashboard</a>
+    <a href="/chat-select/">💬 Chat</a>
+    <a href="/complaint/">Complaint</a>
+    <a href="/report/student/">📄 Reports</a>
+
+</div>
+
+<!-- MAIN -->
+<div class="main" id="main">
+
+<!-- Stats -->
+<div class="grid">
+
+<div class="card">
+<h3>{{ courses|length }}</h3>
+<p>Total Subjects</p>
+</div>
+
+<div class="card">
+<h3>{{ completion_data|length }}</h3>
+<p>Active Courses</p>
+</div>
+
+<div class="card">
+<h3>{{ overall_progress }}%</h3>
+<p>Overall Progress</p>
+</div>
+
+<div class="card">
+<h3>{{ upcoming_topics|length }}</h3>
+<p>Upcoming Topics</p>
+</div>
+
+</div>
+
+<!-- Chart -->
+<div class="section card">
+<canvas id="myChart"></canvas>
+</div>
+
+<script>
+new Chart(document.getElementById('myChart'), {
+    type: 'bar',
+    data: {
+        labels: {{ course_names|safe }},
+        datasets: [{
+            label: 'Completion %',
+            data: {{ completion_data|safe }},
+            backgroundColor: '#D0A2F7'
+        }]
+    }
+});
+</script>
+
+<!-- Course Progress -->
+<div class="section grid">
+
+{% for course in courses %}
+<div class="card">
+<h3>{{ course.name }}</h3>
+<p>{{ course.completion }}%</p>
+
+<div class="progress">
+<div class="progress-bar" style="width: {{ course.completion }}%">
+{{ course.completion }}%
+</div>
+</div>
+
+</div>
+{% endfor %}
+
+</div>
+
+<!-- Upcoming -->
+<div class="section card">
+<h3>Upcoming Topics</h3>
+
+{% for topic in upcoming_topics %}
+<p>{{ topic.topic_name }} - {{ topic.planned_start_date }}</p>
+{% empty %}
+<p>No upcoming topics</p>
+{% endfor %}
+
+</div>
+
+<!-- Missed -->
+<div class="section card">
+<h3>Missed Topics</h3>
+
+{% for topic in missed_topics %}
+<p>{{ topic.topic_name }}</p>
+{% empty %}
+<p>No missed topics</p>
+{% endfor %}
+
+</div>
+
+<!-- Progress Table -->
+<div class="section card">
+
+<h3>Daily Progress & Notes</h3>
+
+<table>
+
+<tr>
+<th>Topic</th>
+<th>Date</th>
+<th>Lectures</th>
+<th>Notes</th>
+<th>File</th>
+</tr>
+
+{% for p in progress_data %}
+<tr>
+
+<td>{{ p.topic.topic_name }}</td>
+<td>{{ p.date }}</td>
+<td>{{ p.lectures_covered }}</td>
+
+<td>
+{% if p.notes %}
+{{ p.notes }}
+{% else %}
+-
+{% endif %}
+</td>
+
+<td>
+{% if p.attachment %}
+<a href="{{ p.attachment.url }}" download>Download</a>
+{% else %}
+-
+{% endif %}
+</td>
+
+</tr>
+{% endfor %}
+
+</table>
+
+</div>
+
+</div>
+
+<!-- JS -->
+<script>
+
+function toggleSidebar() {
+    let sidebar = document.getElementById("sidebar");
+    sidebar.classList.toggle("active");
+}
+
+</script>
+
+</body>
+</html>

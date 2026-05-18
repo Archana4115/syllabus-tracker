@@ -1,0 +1,87 @@
+/* BODY */
+body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    background: #F1EAFF;
+}
+
+/* MAIN */
+.main {
+    max-width: 900px;
+    margin: 30px auto;
+    padding: 20px;
+}
+
+/* TITLE */
+.main h2 {
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+/* GRID */
+.chat-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+/* CARD */
+.card {
+    background: white;
+    padding: 20px;
+    border-radius: 18px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+    transition: 0.3s;
+    animation: fadeUp 0.6s ease;
+}
+
+/* HOVER */
+.card:hover {
+    transform: translateY(-5px);
+}
+
+/* COURSE NAME */
+.card h3 {
+    margin-bottom: 10px;
+}
+
+/* TEACHER */
+.card p {
+    color: gray;
+    margin-bottom: 15px;
+}
+
+/* BUTTON */
+.btn {
+    display: inline-block;
+    padding: 10px 15px;
+    background: #D0A2F7;
+    border-radius: 10px;
+    text-decoration: none;
+    color: black;
+    transition: 0.3s;
+}
+
+.btn:hover {
+    background: #DCBFFF;
+    transform: scale(1.05);
+}
+
+/* ANIMATION */
+@keyframes fadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* MOBILE */
+@media (max-width: 768px) {
+    .chat-grid {
+        grid-template-columns: 1fr;
+    }
+}

@@ -1,0 +1,60 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+
+<head>
+<title>Student Report</title>
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+<style>
+
+body {
+    background:#F1EAFF;
+    font-family:Poppins;
+}
+
+.container {
+    max-width:900px;
+    margin:30px auto;
+    padding:20px;
+}
+
+.card {
+    background:white;
+    padding:20px;
+    border-radius:15px;
+    margin-bottom:15px;
+    box-shadow:0 8px 20px rgba(0,0,0,0.05);
+}
+
+.btn {
+    background:#D0A2F7;
+    padding:10px 15px;
+    border-radius:10px;
+    text-decoration:none;
+    color:black;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h2>📄 Your Report</h2>
+
+{% for c in courses %}
+<div class="card">
+    <h3>{{ c.course_name }}</h3>
+    <p>Completion: {{ c.course_name }}</p>
+</div>
+{% endfor %}
+
+<a href="/report/download/" class="btn">Download Report</a>
+
+</div>
+
+</body>
+</html>
