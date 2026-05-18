@@ -1,0 +1,150 @@
+/* BODY */
+body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    background: #F1EAFF;
+}
+
+/* CONTAINER */
+.chat-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+/* HEADER */
+.chat-header {
+    padding: 15px;
+    background: white;
+    border-bottom: 1px solid #eee;
+    font-weight: 600;
+    text-align: center;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05)
+    ;
+}
+
+/* CHAT BOX */
+.chat-box {
+    flex: 1;
+    padding: 15px;
+    overflow-y: auto;
+    background: #F9F6FF;
+}
+
+/* MESSAGE ROW */
+.message {
+    display: flex;
+    margin: 10px 0;
+    width : 100%;
+    animation: fadeUp 0.3s ease;
+}
+
+/* LEFT */
+.message.left {
+    justify-content: flex-start;
+}
+
+/* RIGHT */
+.message.right {
+    justify-content: flex-end;
+}
+
+/* BUBBLE */
+.bubble {
+    padding: 10px 15px;
+    border-radius: 15px;
+    max-width: 60%;
+    word-wrap: break-word;
+}
+
+/* MY MESSAGE */
+.bubble.me {
+    background: #D0A2F7;
+}
+
+/* OTHER MESSAGE */
+.bubble.other {
+    background: #E5D4FF;
+}
+
+/* TIME */
+.time {
+    font-size: 10px;
+    color: gray;
+    margin-top: 5px;
+    text-align: right;
+}
+
+/* INPUT AREA */
+.chat-input {
+    display: flex;
+    padding: 10px;
+    background: white;
+    border-top: 1px solid #eee;
+}
+
+/* INPUT */
+.chat-input input {
+    flex: 1;
+    padding: 12px;
+    border-radius: 20px;
+    border: 1px solid #ddd;
+}
+
+/* BUTTON */
+.chat-input button {
+    margin-left: 10px;
+    background: #D0A2F7;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.chat-input button:hover {
+    background: #DCBFFF;
+    transform: scale(1.1);
+}
+
+/* DATE LABEL */
+.chat-box div {
+    animation: fadeIn 0.5s ease;
+}
+
+/* ANIMATIONS */
+@keyframes fadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* MOBILE */
+@media (max-width: 768px) {
+
+    .chat-header {
+        font-size: 16px;
+    }
+
+    .bubble {
+        max-width: 80%;
+        font-size: 14px;
+    }
+
+}
+
+.chat-box {
+    display: flex;
+    flex-direction: column;
+}
+
