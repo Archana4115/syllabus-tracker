@@ -9,6 +9,7 @@ from datetime import date, timedelta
 from .models import Topic
 from progress.models import Topic
 from progress.models import ChatMessage
+from progress.models import Topic, DailyProgress
 from progress.models import DailyProgress
 from .models import Enrollment, Topic
 from django.contrib.auth import get_user_model
@@ -66,13 +67,13 @@ def teacher_dashboard(request):
         'overall_progress': overall_progress
     }
 
-    completed_topics = Topic.objects.filter(
-    completed=True
-    ).count()
+    completed_topics = DailyProgress.objects.values(
+        'topic'
+    ).distinct().count()
 
-    pending_topics = Topic.objects.filter(
-    completed=False
-    ).count()
+    total_topics = Topic.objects.count()
+
+    pending_topics = total_topics - completed_topics
 
     return render(request, 'teacher_dashboard.html', {
 
@@ -93,10 +94,14 @@ def student_dashboard(request):
     course_data = []
     course_names = []
     completion_data = []
-    progress_data = []
-    overall_progress = []
+    overall_progress = 0
+
+    # =========================
+    # COURSE DATA
+    # =========================
 
     for enroll in enrollments:
+
         course = enroll.course
         completion = course.get_completion_percentage()
 
@@ -108,13 +113,18 @@ def student_dashboard(request):
         course_names.append(course.course_name)
         completion_data.append(completion)
 
-    total = 0 
+    # =========================
+    # OVERALL PROGRESS
+    # =========================
+
+    total = 0
     count = 0
 
     for enroll in enrollments:
+
         course = enroll.course
         completion = course.get_completion_percentage()
-    
+
         total += completion
         count += 1
 
@@ -123,8 +133,12 @@ def student_dashboard(request):
     else:
         overall_progress = 0
 
-    #  Upcoming topics (next 7 days)
+    # =========================
+    # UPCOMING TOPICS
+    # =========================
+
     from datetime import timedelta
+
     today = date.today()
     next_week = today + timedelta(days=7)
 
@@ -135,25 +149,65 @@ def student_dashboard(request):
         planned_start_date__range=[today, next_week]
     )
 
-        #missed topics
+    # =========================
+    # MISSED TOPICS
+    # =========================
+
     missed_topics = Topic.objects.filter(
         unit__course__id__in=course_ids,
         planned_end_date__lt=today
     )
 
+    # =========================
+    # DAILY PROGRESS
+    # =========================
+
     progress_data = DailyProgress.objects.filter(
         topic__unit__course__in=[enroll.course for enroll in enrollments]
     ).order_by('-date')
-    
+
+    # =========================
+    # ANALYTICS GRAPH
+    # =========================
+
+    # COMPLETED TOPICS
+    completed_topics = DailyProgress.objects.filter(
+        topic__unit__course__id__in=course_ids
+    ).values('topic').distinct().count()
+
+    # TOTAL TOPICS
+    total_topics = Topic.objects.filter(
+        unit__course__id__in=course_ids
+    ).count()
+
+    # PENDING TOPICS
+    pending_topics = total_topics - completed_topics
+
+    # =========================
+    # CONTEXT
+    # =========================
 
     context = {
+
         'courses': course_data,
+
         'course_names': course_names,
+
         'completion_data': completion_data,
+
         'upcoming_topics': upcoming_topics,
+
         'missed_topics': missed_topics,
+
         'progress_data': progress_data,
-        'overall_progress': overall_progress
+
+        'overall_progress': overall_progress,
+
+        # GRAPH DATA
+        'completed_topics': completed_topics,
+
+        'pending_topics': pending_topics,
+
     }
 
     return render(request, 'student_dashboard.html', context)

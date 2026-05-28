@@ -69,26 +69,38 @@
 <!-- Chart -->
 <h3 style="margin-top:20px;">Overview</h3>
 
-<div class="section card">
-    <h3>Topic Analytics</h3>
+<div class="analytics-card">
 
-    <canvas id="pieChart"></canvas>
+    <h3>📊 Topic Analytics</h3>
+
+    <div class="chart-container">
+        <canvas id="pieChart"></canvas>
+    </div>
+
+    <div class="analytics-stats">
+
+        <div class="analytics-box">
+            <h4>Completed</h4>
+            <p>{{ completed_topics }}</p>
+        </div>
+
+        <div class="analytics-box">
+            <h4>Pending</h4>
+            <p>{{ pending_topics }}</p>
+        </div>
+
+    </div>
+
 </div>
 
 <script>
-new Chart(document.getElementById('myChart'), {
-    type: 'bar',
-    data: {
-        labels: {{ course_names|safe }},
-        datasets: [{
-            label: 'Completion %',
-            data: {{ completion_data|safe }},
-            backgroundColor: '#D0A2F7'
-        }]
-    }
-});
 
-new Chart(document.getElementById('pieChart'), {
+const completedTopics = Number("{{ completed_topics|default:0 }}");
+const pendingTopics = Number("{{ pending_topics|default:0 }}");
+
+const ctx2 = document.getElementById('pieChart');
+
+new Chart(ctx2, {
 
     type: 'pie',
 
@@ -98,20 +110,34 @@ new Chart(document.getElementById('pieChart'), {
 
         datasets: [{
 
-            data: [
-                {{ completed_topics }},
-                {{ pending_topics }}
-            ],
+            data: [completedTopics, pendingTopics],
 
             backgroundColor: [
                 '#D0A2F7',
                 '#E5D4FF'
-            ]
+            ],
+
+            borderWidth: 2
 
         }]
+    },
+
+    options: {
+
+        responsive: true,
+
+        plugins: {
+
+            legend: {
+                position: 'bottom'
+            }
+
+        }
+
     }
 
 });
+
 </script>
 
 <!-- Courses -->

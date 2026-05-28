@@ -3,21 +3,26 @@
 <html>
 
 <head>
+
 <title>Student Dashboard</title>
 
 <link rel="stylesheet" href="{% static 'css/style.css' %}">
 <link rel="stylesheet" href="{% static 'css/student_dashboard.css' %}">
+
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 </head>
 
 <body>
 
-<!-- 🔘 TOPBAR -->
+<!-- TOPBAR -->
 <div class="topbar">
 
-    <!-- ☰ MENU -->
+    <!-- MENU BUTTON -->
     <div class="menu-btn" onclick="toggleSidebar()">
         ☰
     </div>
@@ -32,155 +37,277 @@
     <h2>Tracker</h2>
 
     <a href="#">Dashboard</a>
-    <a href="/chat-select/">💬 Chat</a>
-    <a href="/complaint/">Complaint</a>
-    <a href="/report/student/">📄 Reports</a>
+
+    <a href="/chat-select/">
+        💬 Chat
+    </a>
+
+    <a href="/complaint/">
+        Complaint
+    </a>
+
+    <a href="/report/student/">
+        📄 Reports
+    </a>
 
 </div>
 
 <!-- MAIN -->
-<div class="main" id="main">
+<div class="main">
 
-<!-- Stats -->
-<div class="grid">
+    <!-- STATS -->
+    <div class="grid">
 
-<div class="card">
-<h3>{{ courses|length }}</h3>
-<p>Total Subjects</p>
+        <div class="card">
+            <h3>{{ courses|length }}</h3>
+            <p>Total Subjects</p>
+        </div>
+
+        <div class="card">
+            <h3>{{ completion_data|length }}</h3>
+            <p>Active Courses</p>
+        </div>
+
+        <div class="card">
+            <h3>{{ overall_progress }}%</h3>
+            <p>Overall Progress</p>
+        </div>
+
+        <div class="card">
+            <h3>{{ upcoming_topics|length }}</h3>
+            <p>Upcoming Topics</p>
+        </div>
+
+    </div>
+
+    <!-- ANALYTICS -->
+    <div class="analytics-card">
+
+        <h3>📊 Topic Analytics</h3>
+
+        <div class="chart-container">
+
+            <canvas id="studentPieChart"></canvas>
+
+        </div>
+
+        <!-- STATS -->
+        <div class="analytics-stats">
+
+            <div class="analytics-box">
+
+                <h4>Completed</h4>
+
+                <p>{{ completed_topics }}</p>
+
+            </div>
+
+            <div class="analytics-box">
+
+                <h4>Pending</h4>
+
+                <p>{{ pending_topics }}</p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- COURSE PROGRESS -->
+    <div class="section grid">
+
+        {% for course in courses %}
+
+        <div class="card">
+
+            <h3>{{ course.name }}</h3>
+
+            <p>{{ course.completion }}%</p>
+
+            <div class="progress">
+
+                <div class="progress-bar" style="width: {{ course.completion }}%">
+
+                    {{ course.completion }}%
+
+                </div>
+
+            </div>
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+    <!-- UPCOMING TOPICS -->
+    <div class="section card">
+
+        <h3>Upcoming Topics</h3>
+
+        {% for topic in upcoming_topics %}
+
+            <p>
+                {{ topic.topic_name }} -
+                {{ topic.planned_start_date }}
+            </p>
+
+        {% empty %}
+
+            <p>No upcoming topics</p>
+
+        {% endfor %}
+
+    </div>
+
+    <!-- MISSED TOPICS -->
+    <div class="section card">
+
+        <h3>Missed Topics</h3>
+
+        {% for topic in missed_topics %}
+
+            <p>{{ topic.topic_name }}</p>
+
+        {% empty %}
+
+            <p>No missed topics</p>
+
+        {% endfor %}
+
+    </div>
+
+    <!-- DAILY PROGRESS -->
+    <div class="section card">
+
+        <h3>Daily Progress & Notes</h3>
+
+        <div class="table-container">
+
+            <table>
+
+                <tr>
+
+                    <th>Topic</th>
+                    <th>Date</th>
+                    <th>Lectures</th>
+                    <th>Notes</th>
+                    <th>File</th>
+
+                </tr>
+
+                {% for p in progress_data %}
+
+                <tr>
+
+                    <td>{{ p.topic.topic_name }}</td>
+
+                    <td>{{ p.date }}</td>
+
+                    <td>{{ p.lectures_covered }}</td>
+
+                    <td>
+
+                        {% if p.notes %}
+                            {{ p.notes }}
+                        {% else %}
+                            -
+                        {% endif %}
+
+                    </td>
+
+                    <td>
+
+                        {% if p.attachment %}
+
+                            <a href="{{ p.attachment.url }}" download>
+
+                                Download
+
+                            </a>
+
+                        {% else %}
+
+                            -
+
+                        {% endif %}
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </table>
+
+        </div>
+
+    </div>
+
 </div>
 
-<div class="card">
-<h3>{{ completion_data|length }}</h3>
-<p>Active Courses</p>
-</div>
-
-<div class="card">
-<h3>{{ overall_progress }}%</h3>
-<p>Overall Progress</p>
-</div>
-
-<div class="card">
-<h3>{{ upcoming_topics|length }}</h3>
-<p>Upcoming Topics</p>
-</div>
-
-</div>
-
-<!-- Chart -->
-<div class="section card">
-<canvas id="myChart"></canvas>
-</div>
-
+<!-- PIE CHART -->
 <script>
-new Chart(document.getElementById('myChart'), {
-    type: 'bar',
+
+const completedTopics = Number("{{ completed_topics|default:0 }}");
+
+const pendingTopics = Number("{{ pending_topics|default:0 }}");
+
+const ctx3 = document.getElementById('studentPieChart');
+
+new Chart(ctx3, {
+
+    type: 'pie',
+
     data: {
-        labels: {{ course_names|safe }},
+
+        labels: ['Completed', 'Pending'],
+
         datasets: [{
-            label: 'Completion %',
-            data: {{ completion_data|safe }},
-            backgroundColor: '#D0A2F7'
+
+            data: [
+                completedTopics,
+                pendingTopics
+            ],
+
+            backgroundColor: [
+                '#D0A2F7',
+                '#E5D4FF'
+            ],
+
+            borderWidth: 2
+
         }]
+    },
+
+    options: {
+
+        responsive: true,
+
+        plugins: {
+
+            legend: {
+                position: 'bottom'
+            }
+
+        }
+
     }
+
 });
+
 </script>
 
-<!-- Course Progress -->
-<div class="section grid">
-
-{% for course in courses %}
-<div class="card">
-<h3>{{ course.name }}</h3>
-<p>{{ course.completion }}%</p>
-
-<div class="progress">
-<div class="progress-bar" style="width: {{ course.completion }}%">
-{{ course.completion }}%
-</div>
-</div>
-
-</div>
-{% endfor %}
-
-</div>
-
-<!-- Upcoming -->
-<div class="section card">
-<h3>Upcoming Topics</h3>
-
-{% for topic in upcoming_topics %}
-<p>{{ topic.topic_name }} - {{ topic.planned_start_date }}</p>
-{% empty %}
-<p>No upcoming topics</p>
-{% endfor %}
-
-</div>
-
-<!-- Missed -->
-<div class="section card">
-<h3>Missed Topics</h3>
-
-{% for topic in missed_topics %}
-<p>{{ topic.topic_name }}</p>
-{% empty %}
-<p>No missed topics</p>
-{% endfor %}
-
-</div>
-
-<!-- Progress Table -->
-<div class="section card">
-
-<h3>Daily Progress & Notes</h3>
-
-<table>
-
-<tr>
-<th>Topic</th>
-<th>Date</th>
-<th>Lectures</th>
-<th>Notes</th>
-<th>File</th>
-</tr>
-
-{% for p in progress_data %}
-<tr>
-
-<td>{{ p.topic.topic_name }}</td>
-<td>{{ p.date }}</td>
-<td>{{ p.lectures_covered }}</td>
-
-<td>
-{% if p.notes %}
-{{ p.notes }}
-{% else %}
--
-{% endif %}
-</td>
-
-<td>
-{% if p.attachment %}
-<a href="{{ p.attachment.url }}" download>Download</a>
-{% else %}
--
-{% endif %}
-</td>
-
-</tr>
-{% endfor %}
-
-</table>
-
-</div>
-
-</div>
-
-<!-- JS -->
+<!-- SIDEBAR TOGGLE -->
 <script>
 
-function toggleSidebar() {
+function toggleSidebar(){
+
     let sidebar = document.getElementById("sidebar");
+
     sidebar.classList.toggle("active");
+
 }
 
 </script>

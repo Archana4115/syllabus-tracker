@@ -3,123 +3,112 @@
 <html>
 
 <head>
+
 <title>Chat</title>
+
 <link rel="stylesheet" href="{% static 'css/style.css' %}">
 <link rel="stylesheet" href="{% static 'css/chat_room.css' %}">
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+
 </head>
 
 <body>
 
 <div class="chat-container">
 
-    <!-- Header -->
+    <!-- HEADER -->
     <div class="chat-header">
-        {{ receiver.username }}
+
+        <h2>{{ receiver.username }}</h2>
+
     </div>
 
-    <!-- Messages -->
-    <div class="chat-box"></div>
+    <!-- CHAT BOX -->
+    <div class="chat-box" id="chat-box">
 
-    <!-- Input -->
-    <form id="chat-form" class="chat-input">
+        {% for msg in messages %}
+
+            <!-- DATE -->
+            {% ifchanged msg.timestamp.date %}
+
+                <div class="date-divider">
+                    {{ msg.timestamp|date:"d M Y" }}
+                </div>
+
+            {% endifchanged %}
+
+            <!-- MY MESSAGE -->
+            {% if msg.sender == request.user %}
+
+                <div class="message right">
+
+                    <div class="bubble me">
+
+                        <div class="message-text">
+                            {{ msg.message }}
+                        </div>
+
+                        <div class="time">
+                            {{ msg.timestamp|date:"h:i A" }}
+                        </div>
+
+                    </div>
+
+                </div>
+
+            {% else %}
+
+                <!-- OTHER MESSAGE -->
+
+                <div class="message left">
+
+                    <div class="bubble other">
+
+                        <div class="message-text">
+                            {{ msg.message }}
+                        </div>
+
+                        <div class="time">
+                            {{ msg.timestamp|date:"h:i A" }}
+                        </div>
+
+                    </div>
+
+                </div>
+
+            {% endif %}
+
+        {% endfor %}
+
+    </div>
+
+    <!-- INPUT -->
+    <form method="POST" class="chat-input">
+
         {% csrf_token %}
-        <input type="text" id="msg-input" placeholder="Type message..." required>
-        <button type="submit">➤</button>
+
+        <input
+            type="text"
+            name="message"
+            placeholder="Type message..."
+            required
+        >
+
+        <button type="submit">
+            ➤
+        </button>
+
     </form>
 
 </div>
 
-<!-- JS -->
+<!-- AUTO SCROLL -->
 <script>
 
-let lastMessageCount = 0;
+const chatBox = document.getElementById("chat-box");
 
-function loadMessages() {
-    fetch("/get-messages/{{ receiver.id }}/")
-    .then(res => res.json())
-    .then(data => {
-
-        let chatBox = document.querySelector('.chat-box');
-
-        //  Only update if new messages
-        if (data.messages.length === lastMessageCount) {
-            return;
-        }
-
-        chatBox.innerHTML = '';
-        lastMessageCount = data.messages.length;
-
-        let lastDate = "";
-
-        data.messages.forEach(msg => {
-
-            console.log(msg.sender, msg.is_me);
-
-            // Date
-            if (msg.date !== lastDate) {
-                let dateDiv = document.createElement('div');
-                dateDiv.style.textAlign = "center";
-                dateDiv.style.margin = "10px";
-                dateDiv.style.fontSize = "12px";
-                dateDiv.style.color = "gray";
-                dateDiv.innerText = msg.date;
-
-                chatBox.appendChild(dateDiv);
-                lastDate = msg.date;
-            }
-
-            let div = document.createElement('div');
-                if (msg.is_me === true) {
-                     div.style.justifyContent = "flex-end";
-                    div.className = 'message right';
-                    div.innerHTML = `
-                        <div class="bubble me">
-                            ${msg.message}
-                            <div class="time">${msg.time}</div>
-                        </div>
-                    `;
-                } else {
-                    div.className = 'message left';
-                    div.innerHTML = `
-                        <div class="bubble other">
-                            <b>${msg.sender}</b><br>
-                            ${msg.message}
-                            <div class="time">${msg.time}</div>
-                        </div>
-                    `;
-                }
-
-            chatBox.appendChild(div);
-        });
-
-        chatBox.scrollTop = chatBox.scrollHeight;
-    });
-}
-
-// Auto refresh
-setInterval(loadMessages, 4000);
-loadMessages();
-
-
-// Send message
-document.getElementById("chat-form").addEventListener("submit", function(e){
-    e.preventDefault();
-
-    let msg = document.getElementById("msg-input").value;
-
-    fetch("/chat/{{ receiver.id }}/", {
-        method: "POST",
-        headers: {
-            "X-CSRFToken": "{{ csrf_token }}",
-            "Content-Type": "application/x-www-form-urlencoded"
-        },
-        body: "message=" + encodeURIComponent(msg)
-    }).then(() => {
-        document.getElementById("msg-input").value = "";
-        loadMessages();
-    });
-});
-
+chatBox.scrollTop = chatBox.scrollHeight;
 
 </script>
 
